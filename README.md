@@ -37,7 +37,7 @@ In this module, you'll modify the Terraform we created to be more generic, and c
 
     - Replace the *main.tf* file hard-coded values with variable references. For example:
 
-        ```json
+        ```
         provider "azurerm" {
             tenant_id       = "${var.tenant_id}"
             subscription_id = "${var.subscription_id}"
@@ -54,7 +54,7 @@ In this module, you'll modify the Terraform we created to be more generic, and c
 
     - Add a backend section to the top of the main.tf file:
 
-        ```json
+        ```
         terraform {
             backend "azurerm" {
                 key   = "terraform.tfstate"
@@ -66,7 +66,7 @@ In this module, you'll modify the Terraform we created to be more generic, and c
 
     - Next, create a *vars.tf* file in the *app* folder and declare the variables we just created:
 
-        ```json
+        ```
         variable "tenant_id" {
             description = "Azure tenant where the app will be deployed"
         }
@@ -161,6 +161,8 @@ That's it!
 ## Module 2: Releasing to Dev and Prod
 
 In this module, you'll be using the Terraform build artifact to create a release pipeline that reuses the same code to deploy to dev and prod environments.
+
+
 
 ## Module 3: Building an ASP.NET MVC App
 
