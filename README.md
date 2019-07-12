@@ -225,6 +225,7 @@ In this module, you'll be using the Terraform build artifact to create a release
     - Terraform arguments: plan
     - Check the *Install Terraform* box
     - Terraform version: latest
+    - Check *Use Azure Service Principal Endpoint*
     - Azure Connection Type: Azure Resource Manager
     - Azure Subscription: select yours
     - Init State in Azure Storage: checked
