@@ -251,7 +251,7 @@ In this module, you'll be using the Terraform build artifact to create a release
 
 12. Save the pipeline.
 
-13. Queue the pipeline and deploy to the Dev stage. Just as you did with the build, you can monitor the pipeline. Ensure it succeeds (it may take ~5-7 minutes). 
+13. Create a release and deploy to the Dev stage. Just as you did with the build, you can monitor the pipeline. Ensure it succeeds (it may take ~5-7 minutes). 
 
 14. Validate it created the resources you were expecting.
 
