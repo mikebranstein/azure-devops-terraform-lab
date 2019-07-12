@@ -1,0 +1,16 @@
+﻿<parameters>
+  <parameter name="CosmosDbEndpoint" defaultValue="__CosmosDbEndpoint__">
+    <parameterEntry
+      kind="XmlFile"
+      scope="obj\\Release\\Package\\PackageTmp\\Web\.config$"
+      match="/configuration/appSettings/add[@key='endpoint']/@value" />
+  </parameter>
+
+  <parameter name="CosmosDbAuthKey" defaultValue="__CosmosDbAuthKey__">
+    <parameterEntry
+      kind="XmlFile"
+      scope="obj\\Release\\Package\\PackageTmp\\Web\.config$"
+      match="/configuration/appSettings/add[@key='authKey']/@value" />
+  </parameter>
+
+</parameters>
