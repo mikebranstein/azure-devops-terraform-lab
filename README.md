@@ -723,4 +723,49 @@ That's it! You've created a genericized build of an ASP.NET website. Next step u
 
 In this final module, you'll be updating the Dev and Prod release stages by adding a job and tasks to deploy the web artifact to the Azure environments created by your Terraform deployment. Hop to it.
 
-1. 
+1. Edit the release pipeline you created earlier.
+
+2. Open the Dev stage tasks, add a *New agent job*, name it *Deploy Web*.
+
+3. Add a *Replace Tokens* task and configure:
+
+    - Display name: Replace tokens in SetParameters.xml
+    - Source Path: $(System.DefaultWorkingDirectory)/_DevOpsLab-CI/web
+    - Target File Pattern: *.SetParameters.xml
+
+4. Add Dev stage-scoped variables for CosmosDbAuthKey and CosmosDbEndpoint,
+
+5. Add a *Azure App Service Deploy* task and configure:
+
+    - Display name: Azure App Service Deploy
+    - Connection Type: Azure Resource Manager
+    - Azure subscription: select sub
+    - Azure Service Type: Web App on Windows
+    - App Service Name: select the dev app server Terraform deployed
+    - Package or folder: $(System.DefaultWorkingDirectory)/_DevOpsLab-CI/web/todo.zip
+    - Expand Additional Deployment Options
+        - Check *Select Deployment Method*
+        - Deployment Method: Web Deploy
+        - Check *Take app offline*
+        - SetParameters file: $(System.DefaultWorkingDirectory)/_DevOpsLab-CI/web/todo.SetParameters.xml
+        - leave the rest as defaults
+
+6. Update the Prod stage in the same way, but take care to use Prod stage-scope variables and select the correct web app. 
+
+7. Save your pipeline and queue a new release. Deploy to Dev and Prod environments. 
+
+8. Navigate to the Azure portal and test both sites. You should see they work and add data to different databases.
+
+# Summary
+
+You did it. A multi-environment CICD pipeline. It's beautiful. 
+
+Where do you go next? Start using this on your projects whenever you can. Stop deploying your code by right-clicking the project in Visual Studio. 
+
+## Improvements
+
+Right now, some of our settings are hard-coded - like the app service names for deployment and the Cosmos Db endpoints and keys. This works for our releases because we had infrastructure pre-deployed. But it's not cloud-friendly. 
+
+To be truly cloud-friendly, our Terraform tasks shoudl output these values as environment variables, then use those variables in subsequent tasks. With this level of automation, you can build and destroy dev environemnts willy-nilly, with near zero effort. Imagine a BA needed a second test environment - clone a stage and you'd be done. 
+
+Just something to think about.
