@@ -1,5 +1,0 @@
-tenant_id = "__tf_tenant_id__"
-subscription_id = "__tf_subscription_id__"
-application_short_name = "__tf_application_short_name__"
-environment = "__tf_environment__"
-location = "__tf_location__"

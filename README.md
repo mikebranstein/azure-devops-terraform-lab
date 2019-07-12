@@ -22,6 +22,10 @@ In this lab, we'll be using the Terraform and ASP.NET MVC code you created in th
 
     After creating, create two Private Blob containers: *todo-app-dev-state* and *todo-app-prod-state*, then save the storage account name and key from the *Access Keys* tab of the storage account. We'll be using it later. 
 
+### Finished Code
+
+If you didn't finish the code from the previous lab, you can use my finalized code here. To walk through this lab. 
+
 ## Module 1: Creating a Build Pipeline for Terraform
 In this module, you'll modify the Terraform we created to be more generic, and create a build pipeline that publishes generic Terraform artifacts to Azure DevOps.
 
