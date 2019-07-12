@@ -162,7 +162,105 @@ That's it!
 
 In this module, you'll be using the Terraform build artifact to create a release pipeline that reuses the same code to deploy to dev and prod environments.
 
+1. Navigate to the Pipelines -> Releases area, then create a new release pipeline.
 
+2. Click the *Empty Job* template button to create an empty pipeline.
+
+3. Change the name of *Stage 1* to *Dev*.
+
+4. Click the *+ Add* button next to *Artifacts* to add an artifact. Configure it:
+
+    - Source type: Build
+    - Project: DevOpsLab
+    - Source (build pipeline): DevOpsLab-CI
+    - Default version: latest
+    - Source alias: _DevOpsLab-CI
+
+5. Click the *1 job, 0 task* link under the *Dev* Stage to begin adding jobs and tasks to the release pipeline.
+
+    > Release pipelines are like build pipelines, as they have Jobs and Tasks. But, they introduce another component: stages. For now, you can think of stages as a concept akin to an environment - so each environment you deploy to will have a stage: dev stage and prod stage. 
+    >
+    > Stages also come with automation and approvals, so it's possible to automatically start a stage when a new artifact is available (or when a build completes) or when another stage completes (for example, starting a prod stage deployment when the dev stage completes). You can also gate a stage execution with a robust approval chain.   
+    >
+    > Having a single stage per environment makes a lot of sense, but in more complex environments multi-stage-per-environment releases may be adventageous. But in general, we typically start with a stage per environment.
+
+6. Click on *Agent Job* and rename it to *Deploy Infrastructure*. 
+
+7. Add a *Replace Tokens* task to the job.
+
+    > Before you can add this task, you'll need to install and authorize an Azure DevOps extension from the Marketplace. The extension is called *Colin's ALM Corner Build & Release Tools*. 
+    >
+    > You can search for the extension from the Marketplace tab in the add task area. Follow the on-screen prompts to install and authorize this task for your Azure DevOps account. Then return to the *Add Task* screen and press the built-in *Refresh* link next to *Add tasks* to refresh the list of available tasks.
+
+    - Add the *Replace Tokens* task and configure with these values:
+
+        - Display name: Replace tokens in terraform-tfvars
+        - Source path: $(System.DefaultWorkingDirectory)/_DevOpsLab-CI/terraform/app
+        - Target File Pattern: terraform.tfvars
+
+    - Save the pipeline.
+
+    > What does Replace Tokens do? You'll recall that we created the terraform.tfvars file with placeholder/template values surrounded by double underscores. This task searches a file for that specific pattern (or token) and replaces it with a value we configure in the variables section of the pipeline. The simplicity of the task lies in the naming of your tokens and variables. If the token is named _ _ DatabaseName _ _, the task searches for a variable named *DatabaseName* and substitutes the value automatically. Easy peasy.
+
+8. Now that you know how the Replace tokens task works, navigate to the pipeline variables tab and add variables for the 5 values in the teerraform.tfvars file.
+
+    - Name: tf_application_short_name, Value: todo, Scope: Dev
+    - Name: tf_environment, Value: dev, Scope: Dev
+    - Name: tf_location, Value: east us 2, Scope: Dev
+    - Name: tf_subscription_id: Value: your azure sub id, Scope: Dev
+    - Name: tf_tenant_id: Value: your Azure tenant id for the sub, Scope: Dev
+
+        > You may have noticed the Scope value we set to *Dev* above. Scope refers to which Stage a variable applies. You can select a specific stage (like Dev), or *Release*, which applies the variable to all stages (the entire release pipeline).
+
+9. Return to the Dev stage job and tasks. Search the Marketplace for another task named Terraform, created by Peter Groenewegen. Install and approve it. 
+
+10. Add the *Run Terraform* task to pipeline and configure it:
+
+    - Display name: TF plan
+    - Terraform template path: $(System.DefaultWorkingDirectory)/_DevOpsLab-CI/terraform/app 
+    - Terraform arguments: plan
+    - Check the *Install Terraform* box
+    - Terraform version: latest
+    - Azure Connection Type: Azure Resource Manager
+    - Azure Subscription: select yours
+    - Init State in Azure Storage: checked
+    - Specify Storage Account: checked
+    - Resource Group: terraform-state-rg
+    - Storage Account: tfstateXXXX, (remember this from above)
+    - Container Name: todo-app-dev-state, (b/c this is the Dev stage pipeline)
+
+11. Add a second *Run Terraform* task to pipeline and configure it:
+
+    - Display name: TF apply
+    - Terraform template path: $(System.DefaultWorkingDirectory)/_DevOpsLab-CI/terraform/app 
+    - Terraform arguments: apply -auto-approve
+    - Check the *Install Terraform* box
+    - Terraform version: latest
+    - Azure Connection Type: Azure Resource Manager
+    - Azure Subscription: select yours
+    - Init State in Azure Storage: checked
+    - Specify Storage Account: checked
+    - Resource Group: terraform-state-rg
+    - Storage Account: tfstateXXXX, (remember this from above)
+    - Container Name: todo-app-dev-state, (b/c this is the Dev stage pipeline) 
+
+12. Save the pipeline.
+
+13. Queue the pipeline and deploy to the Dev stage. Just as you did with the build, you can monitor the pipeline. Ensure it succeeds (it may take ~5-7 minutes). 
+
+14. Validate it created the resources you were expecting.
+
+15. Clone the Dev stage of the pipeline to create a Prod stage.
+
+16. Adjust these setting in the Prod stage tasks and variables:
+
+    - Duplicate all variables, changing the values as needed so they reflect "prod" environment values (specifically tf_environment and the Scope of all variables)
+
+    - For the TF plan and TF apply steps, ensure the storage account container name is set to *todo-app-prod-state*
+
+17. Save and queue the pipeline again. Validate it updates the dev environment and creates a prod environment.
+
+Congrats! You just created an infra-as-code CICD pipeline. 
 
 ## Module 3: Building an ASP.NET MVC App
 
